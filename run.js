@@ -2,18 +2,19 @@ var ahurl = require("./AHURL.js")
 var ahData = require("./AHData.js")
 var items = require("./items.js")
 var schedule = require('node-schedule');
+var fs = require('fs')
+var jsonfile = require('jsonfile')
 
 var itemIDs = items()[1]
 var itemsToGet = items()[0]
 var unitPrices = itemsToGet
 
+pullData()
 
-var recursive = function () {
-    console.log('test')//pullData()
-    setTimeout(recursive,1000);
-}
 
-recursive()
+
+
+
 
 
 
@@ -32,8 +33,17 @@ ahurl().then(function(dataURLRes){
 		unitPrices[itemIDs[i]] = foundUnit 
 		console.log(itemName +" - " + foundUnit)
 	}
-	console.log(unitPrices)
-})
+	//console.log(unitPrices)
+ })//.then(function(){
+// var file = './pulledData.txt'
+// var obj = unitPrices
+ 
+// jsonfile.writeFile(file, obj, function (err) {
+//   console.error(err)
+// })
+
+
+// })
 }
 
 function findUnit (data,itemID){

@@ -26,7 +26,40 @@ module.exports = function(){
 		"128550": "Cloak: Binding of Intellect",
 		"128549": "Cloak: Binding of Agilty"}
 
-	var items = [itemsToGet,itemIDS]
+	var mats = {
+			"Flask of Ten Thousand Scars":{"124105":7,
+											"124101":10,
+											"124102":10},
+			"Flask of the Countless Armies":{"124105":7,
+											"124101":10,
+											"124103":10},
+			"Flask of the Sevent Demon":{"124105":7,
+											"124104":10,
+											"124103":10},
+			"Flask of the Whispered Pack":{"124105":7,
+											"124104":10,
+											"124102":10},
+			"Infernal Alchemist Stone":{"142117":30,
+										"124106":5,
+										"124444":1},
+			"Ring: Binding of Haste":{"124442":4,
+										"124440":50},
+			"Ring: Binding of Mastery":{"124442":4,
+										"124440":50},
+			"Ring: Binding of Critical Strike":{"124442":4,
+										"124440":50},
+			"Cloak: Binding of Strength":{"142117":20,
+										"124442":8,
+										"124440":30},
+			"Cloak: Binding of Intellect":{"142117":20,
+										"124442":8,
+										"124440":30},
+			"Cloak: Binding of Agilty":{"142117":20,
+										"124442":8,
+										"124440":30}
+	}
+
+	var items = [itemsToGet,itemIDS,mats]
 
 	return items
 
