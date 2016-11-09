@@ -1,32 +1,40 @@
 var ahurl = require("./AHURL.js")
 var ahData = require("./AHData.js")
 var items = require("./items.js")
+var schedule = require('node-schedule');
 
 var itemIDs = items()[1]
 var itemsToGet = items()[0]
 var unitPrices = itemsToGet
 
-var test = ahurl().then(function(dataURLRes){
 
-	
+var recursive = function () {
+    console.log('test')//pullData()
+    setTimeout(recursive,1000);
+}
+
+recursive()
+
+
+
+
+
+
+function pullData () {
+ahurl().then(function(dataURLRes){
 	console.log("Got Auction House URL")
 	return ahData(dataURLRes.files[0].url)
-
 }).then(function(data){
 	console.log('Retrieved Auction House Data')
-
 	for (var i = 0, len = itemIDs.length; i < len; i++) {
 		var foundUnit = findUnit(data,itemIDs[i])
 		var itemName = itemsToGet[itemIDs[i]]
 		unitPrices[itemIDs[i]] = foundUnit 
 		console.log(itemName +" - " + foundUnit)
-		
 	}
 	console.log(unitPrices)
 })
-
-		
-
+}
 
 function findUnit (data,itemID){
 

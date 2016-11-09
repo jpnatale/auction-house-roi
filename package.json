@@ -15,5 +15,10 @@
   "bugs": {
     "url": "https://github.com/jpnatale/auction-house-roi/issues"
   },
-  "homepage": "https://github.com/jpnatale/auction-house-roi#readme"
+  "homepage": "https://github.com/jpnatale/auction-house-roi#readme",
+  "dependencies": {
+    "mongodb": "^2.2.11",
+    "node-schedule": "^1.2.0",
+    "redis": "^2.6.3"
+  }
 }
