@@ -8,42 +8,115 @@ var jsonfile = require('jsonfile')
 var itemIDs = items()[1]
 var itemsToGet = items()[0]
 var unitPrices = itemsToGet
+var costs = items()[2]
+var costKeys = Object.keys(costs)
+var profits = {}
+var roi = {}
+var matCosts = {}
+var roiOut = {}
+
+
 
 pullData()
 
 
 
 
+function getCost(){
+
+console.log(" ")
+console.log('Cost to Make the Items:')
+console.log(' ')
+	for (var i = 0, len = costKeys.length; i < len; i++) {
+	
+		var craftableID = costKeys[i]
+		
+		var mats = costs[craftableID]
+		var matKeys = Object.keys(mats)
+		var cost = 0
+
+		for (var j = 0, len2 = matKeys.length; j < len2; j++) {
+			
+			cost = cost + mats[matKeys[j]]*unitPrices[matKeys[j]]
+		}
+		matCosts[craftableID] = cost
+		profits[craftableID] = 0.95*unitPrices[craftableID]-cost
+		console.log(items()[0][craftableID]+ " - " + cost)
+		roi[craftableID] = Math.round(100*profits[craftableID]/matCosts[craftableID])
+
+
+	}
+
+	bestROI()
+
+
+}
 
 
 
+function bestROI (){
+	console.log(' ')
+	console.log('Maximum ROI is for Making:')
+	console.log(' ')
+var maxroi = 0
+var maxroikey = ""
+
+for (var i = 0, len = costKeys.length; i < len; i++) {
+			if(roi[costKeys[i]] > maxroi){
+			maxroi = roi[costKeys[i]]
+			maxroikey = costKeys[i]
+		}
+
+	}
+
+console.log(items()[0][maxroikey] +", for a profit of " + Math.round(profits[maxroikey]) + " and an ROI of "+ maxroi+".") 
+	console.log(' ')
+	console.log('Maximum Profit is for Making:')
+	console.log(' ')
+
+var maxProfit = 0
+var maxProfitKey = ""
+
+for (var i = 0, len = costKeys.length; i < len; i++) {
+			if(profits[costKeys[i]] > maxProfit){
+			maxProfit = profits[costKeys[i]]
+			maxProfitKey = costKeys[i]
+		}
+
+	}
+console.log(items()[0][maxProfitKey] +", for a profit of " + Math.round(profits[maxProfitKey]) + " and an ROI of "+ roi[maxProfitKey]+".") 
 
 
+}
 
 
 function pullData () {
+
+
 ahurl().then(function(dataURLRes){
-	console.log("Got Auction House URL")
+	console.log(' ')
+	console.log("Got Auction House URL.")
+	console.log(" ")
 	return ahData(dataURLRes.files[0].url)
 }).then(function(data){
-	console.log('Retrieved Auction House Data')
+	console.log('Retrieved Auction House Data.')
+	console.log(' ')
+	console.log('Current Prices on the Auction House:')
+	console.log(' ')
 	for (var i = 0, len = itemIDs.length; i < len; i++) {
 		var foundUnit = findUnit(data,itemIDs[i])
 		var itemName = itemsToGet[itemIDs[i]]
 		unitPrices[itemIDs[i]] = foundUnit 
 		console.log(itemName +" - " + foundUnit)
 	}
-	//console.log(unitPrices)
- })//.then(function(){
-// var file = './pulledData.txt'
-// var obj = unitPrices
- 
-// jsonfile.writeFile(file, obj, function (err) {
-//   console.error(err)
-// })
+	
+ }).then(function(){
+
+ 	getCost()
+
+ })
 
 
-// })
 }
 
 function findUnit (data,itemID){

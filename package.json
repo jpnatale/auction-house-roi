@@ -21,6 +21,7 @@
     "jsonfile": "^2.4.0",
     "mongodb": "^2.2.11",
     "node-schedule": "^1.2.0",
-    "redis": "^2.6.3"
+    "redis": "^2.6.3",
+    "request": "^2.78.0"
   }
 }
