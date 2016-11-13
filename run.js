@@ -15,9 +15,10 @@ var roi = {}
 var matCosts = {}
 var roiOut = {}
 
-
+module.exports = function(){
 
 pullData()
+}
 
 
 

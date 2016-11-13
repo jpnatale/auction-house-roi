@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/jpnatale/auction-house-roi#readme",
   "dependencies": {
+    "express": "^4.14.0",
     "fs": "0.0.1-security",
     "jsonfile": "^2.4.0",
     "mongodb": "^2.2.11",
