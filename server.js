@@ -28,7 +28,7 @@ var maxRoiKey = ""
 var maxProfitKey = ""
 
 
-pullData()
+//pullData()
 
 function getCost(){
 
