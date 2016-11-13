@@ -27,7 +27,7 @@ for (var i = 0, len = allItems.length; i < len; i++) {
 var maxRoiKey = ""
 var maxProfitKey = ""
 
-module.exports = function(v){
+module.exports = function(){
 	pullData()
 }
 
