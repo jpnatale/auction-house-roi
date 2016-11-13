@@ -1,54 +1,61 @@
 var ahurl = require("./AHURL.js")
 var ahData = require("./AHData.js")
-var items = require("./items.js")
+var items = require("./items.js")()
 var schedule = require('node-schedule');
 var fs = require('fs')
 var jsonfile = require('jsonfile')
 
-var itemIDs = items()[1]
-var itemsToGet = items()[0]
-var unitPrices = itemsToGet
-var costs = items()[2]
-var costKeys = Object.keys(costs)
-var profits = {}
-var roi = {}
-var matCosts = {}
-var roiOut = {}
+var express = require('express')
+var app = express()
+var PORT = process.env.PORT || 3000
+var run = require('./run.js')
 
-module.exports = function(){
+
+app.get('/', function (req, res){
+	res.send(pullData())
+})//
+
+
+var costKeys = []
+var allItems = Object.keys(items)
+
+for (var i = 0, len = allItems.length; i < len; i++) {
+  if (items[allItems[i]].hasOwnProperty("mats")){
+  	costKeys.push(allItems[i])
+  }
+}
+var maxRoiKey = ""
+var maxProfitKey = ""
+
 
 pullData()
-}
-
-
-
 
 function getCost(){
 
-console.log(" ")
-console.log('Cost to Make the Items:')
-console.log(' ')
+
+
+
 	for (var i = 0, len = costKeys.length; i < len; i++) {
 	
 		var craftableID = costKeys[i]
 		
-		var mats = costs[craftableID]
+		var mats = items[costKeys[i]].mats
 		var matKeys = Object.keys(mats)
 		var cost = 0
 
 		for (var j = 0, len2 = matKeys.length; j < len2; j++) {
 			
-			cost = cost + mats[matKeys[j]]*unitPrices[matKeys[j]]
+			cost = cost + mats[matKeys[j]]*items[matKeys[j]].costToBuy
 		}
-		matCosts[craftableID] = cost
-		profits[craftableID] = 0.95*unitPrices[craftableID]-cost
-		console.log(items()[0][craftableID]+ " - " + cost)
-		roi[craftableID] = Math.round(100*profits[craftableID]/matCosts[craftableID])
+		items[costKeys[i]].costToMake = cost
+		items[costKeys[i]].profit = 0.95*items[costKeys[i]].costToBuy-items[costKeys[i]].costToMake
+		
+		items[costKeys[i]].roi = Math.round(100*items[costKeys[i]].profit/items[costKeys[i]].costToMake)
 
 
 	}
 
-	bestROI()
+	return bestROI()
 
 
 }
@@ -56,36 +63,41 @@ console.log(' ')
 
 
 function bestROI (){
-	console.log(' ')
-	console.log('Maximum ROI is for Making:')
-	console.log(' ')
-var maxroi = 0
-var maxroikey = ""
+	// console.log(' ')
+	// console.log('Maximum ROI is for Making:')
+	// console.log(' ')
+var maxRoi = 0
+
 
 for (var i = 0, len = costKeys.length; i < len; i++) {
-			if(roi[costKeys[i]] > maxroi){
-			maxroi = roi[costKeys[i]]
-			maxroikey = costKeys[i]
+			if(items[costKeys[i]].roi > maxRoi){
+			maxRoiKey = costKeys[i]
 		}
 
 	}
 
-console.log(items()[0][maxroikey] +", for a profit of " + Math.round(profits[maxroikey]) + " and an ROI of "+ maxroi+".") 
-	console.log(' ')
-	console.log('Maximum Profit is for Making:')
-	console.log(' ')
+items[maxRoiKey].isBestRoi = 1
+
+// console.log(items()[0][maxroikey] +", for a profit of " + Math.round(profits[maxroikey]) + " and an ROI of "+ maxroi+".") 
+// 	console.log(' ')
+// 	console.log('Maximum Profit is for Making:')
+// 	console.log(' ')
 
 var maxProfit = 0
-var maxProfitKey = ""
+
 
 for (var i = 0, len = costKeys.length; i < len; i++) {
-			if(profits[costKeys[i]] > maxProfit){
-			maxProfit = profits[costKeys[i]]
+			if(items[costKeys[i]].profit> maxProfit){
+		
 			maxProfitKey = costKeys[i]
 		}
 
 	}
-console.log(items()[0][maxProfitKey] +", for a profit of " + Math.round(profits[maxProfitKey]) + " and an ROI of "+ roi[maxProfitKey]+".") 
+
+items[maxProfitKey].isBestProfit = 1
+
+// console.log(items()[0][maxProfitKey] +", for a profit of " + Math.round(profits[maxProfitKey]) + " and an ROI of "+ roi[maxProfitKey]+".") 
+
 
 
 }
@@ -95,26 +107,33 @@ function pullData () {
 
 
 ahurl().then(function(dataURLRes){
-	console.log(' ')
-	console.log("Got Auction House URL.")
-	console.log(" ")
+	// console.log(' ')
+	// console.log("Got Auction House URL.")
+	// console.log(" ")
 	return ahData(dataURLRes.files[0].url)
 }).then(function(data){
-	console.log('Retrieved Auction House Data.')
-	console.log(' ')
-	console.log('Current Prices on the Auction House:')
-	console.log(' ')
-	for (var i = 0, len = itemIDs.length; i < len; i++) {
-		var foundUnit = findUnit(data,itemIDs[i])
-		var itemName = itemsToGet[itemIDs[i]]
-		unitPrices[itemIDs[i]] = foundUnit 
-		console.log(itemName +" - " + foundUnit)
+
+
+	// console.log('Retrieved Auction House Data.')
+	// console.log(' ')
+	// console.log('Current Prices on the Auction House:')
+	// console.log(' ')
+	for (var i = 0, len = allItems.length; i < len; i++) {
+		
+		// var foundUnit = findUnit(data,Object.keys(items)[i])
+		items[allItems[i]].costToBuy = findUnit(data,allItems[i])
+		//  itemName = itemsToGet[itemIDs[i]]
+		// unitPrices[itemIDs[i]] = foundUnit 
+		// console.log(itemName +" - " + foundUnit)
 	}
-	
+
  }).then(function(){
 
- 	getCost()
+ 	 getCost()
 
+ }).then(function(){
+ 	var out = {"ROI":String(items[maxRoiKey].itemName+ " - "+items[maxRoiKey].roi),"Profit":String(items[maxProfitKey].itemName+ " - "+Math.round(items[maxProfitKey].profit))}
+ 	return out
  })
 
 
@@ -154,3 +173,8 @@ return finalUnit
 
 }
 
+app.listen(PORT, function(){
+
+	console.log("Express server listening on port " + PORT +"!")
+
+})
