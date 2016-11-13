@@ -1,10 +1,10 @@
 var express = require('express')
 var app = express()
 var PORT = process.env.PORT || 3000
-//var pullData = require('./app.js')
+var pullData = require('./app.js')
 
 app.get('/', function (req, res){
-	res.send('Auction House ROI')
+	res.send(pullData())
 })//
 
 app.listen(PORT, function(){
