@@ -12,7 +12,7 @@ var run = require('./run.js')
 
 
 app.get('/', function (req, res){
-	res.send(pullData())
+	res.send("test")
 })//
 
 
