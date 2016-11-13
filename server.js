@@ -4,7 +4,9 @@ var PORT = process.env.PORT || 3000
 var pullData = require('./app.js')
 
 app.get('/', function (req, res){
-	res.send(pullData())
+	pullData.pullData().then(function(out){
+		res.json(out)
+	})
 })//
 
 app.listen(PORT, function(){
